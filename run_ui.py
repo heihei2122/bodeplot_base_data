@@ -94,7 +94,9 @@ class Demo(QtWidgets.QWidget, Ui_bodeplot_by_ZR):
             wind_plot[-1]=0
             plt.figure("窗函数"+self.fileName_input)
             plt.plot(wind_plot)
-        
+        xlim=self.range.text().split(',')
+        xmin=float(xlim[0][1: ])
+        xmax=float(xlim[1][0:-1])
         if self.fileName_input and self.fileName_output:
             with open(self.fileName_input,errors='ignore') as f:
                 f_csv=csv.reader(f)
@@ -140,18 +142,18 @@ class Demo(QtWidgets.QWidget, Ui_bodeplot_by_ZR):
 
             for j in range (0,int(dianshu/2)):
                 TF_[j]=output_fft_avrage[j]/input_fft_avrage[j]
-                TF_pha[j]=phase(TF_[j])/pi*180
-                TF_mag[j]=20*(log10(abs(TF_[j])).real)
-            # print(TF_mag)
-            # TF_pha=np.unwrap(TF_pha,pi)/pi*180
+                TF_pha[j]=phase(TF_[j]).real/pi*180
+                TF_mag[j]=20*(log10(abs(TF_[j])))
+            
+            # TF_pha[1:-1]=np.unwrap(TF_pha[1:-1],180)
             plt.figure("传递函数"+" using "+wind+" wind "+self.fileName_input)
             plt.subplot(211)
             plt.xscale('log')
             plt.axhline(y=0,c='r',ls="--",lw=1)
             plt.axvline(x=frequ[-1],c='black',ls="-",lw=0.5)
-            # plt.yscale('log')
+            plt.xlim(xmin,xmax)
             plt.grid()
-            plt.plot(frequ,TF_mag,lw=0.8)
+            plt.plot(frequ[1:-1],TF_mag[1:-1],lw=1)
             plt.subplot(212)
             plt.xscale('log')
             plt.axhline(y=180,c='r',ls="--",lw=1)
@@ -159,7 +161,8 @@ class Demo(QtWidgets.QWidget, Ui_bodeplot_by_ZR):
             plt.axvline(x=frequ[-1],c='black',ls="-",lw=0.5)
             plt.grid()
             plt.ylim(-270,270)
-            plt.plot(frequ,TF_pha,lw=0.8)
+            plt.xlim(xmin,xmax)
+            plt.plot(frequ[1:-1],TF_pha[1:-1],lw=1)
         
         plt.show()
         
